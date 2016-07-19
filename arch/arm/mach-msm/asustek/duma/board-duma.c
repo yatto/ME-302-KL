@@ -1083,11 +1083,11 @@ static struct i2c_board_info smb345_charger_i2c_info[] __initdata = {
 	},
 };
 
-//static struct smb345_platform_data smb345_pdata_ER = {
-//	.wpc_pok_gpio = GPIO_WPC_POK,
-//	.wpc_en1 = PM8921_GPIO_PM_TO_SYS(28),
-//	.wpc_en2 = PM8921_GPIO_PM_TO_SYS(32),
-//};
+static struct smb345_platform_data smb345_pdata_ER = {
+	.wpc_pok_gpio = GPIO_WPC_POK,
+	.wpc_en1 = PM8921_GPIO_PM_TO_SYS(28),
+	.wpc_en2 = PM8921_GPIO_PM_TO_SYS(32),
+};
 
 //static struct smb345_platform_data smb345_pdata_SR2 = {
 //	.wpc_pok_gpio = GPIO_WPC_POK,
@@ -1115,20 +1115,19 @@ static struct i2c_board_info smb345_charger_i2c_info[] __initdata = {
 //	},
 //};
 
-//static struct i2c_board_info smb345_charger_i2c_info_ER[] //__initdata = {
-//	{
-//		I2C_BOARD_INFO("smb345", 0x6a),
-//		.platform_data = &smb345_pdata_ER,
-//	},
-//};
-//
-//static void smb345_init(void)
-//{
-//	hw_rev revision = HW_REV_INVALID;
-//
-//	revision = asustek_get_hw_rev();
-//
-//	switch (revision) {
+static struct i2c_board_info smb345_charger_i2c_info_ER[] __initdata = {
+	{
+		I2C_BOARD_INFO("smb345", 0x6a),
+		.platform_data = &smb345_pdata_ER,
+	},
+};
+
+static void smb345_init(void)
+{
+	hw_rev revision = HW_REV_INVALID;
+
+	revision = asustek_get_hw_rev();
+	switch (revision) {
 //	case HW_REV_B:
 //		i2c_register_board_info(APQ_8064_GSBI1_QUP_I2C_BUS_ID,
 //			smb345_charger_i2c_info_SR2,
@@ -1136,18 +1135,18 @@ static struct i2c_board_info smb345_charger_i2c_info[] __initdata = {
 //		break;
 //	case HW_REV_C:
 //	case HW_REV_D:
-//	case HW_REV_E:
-//		i2c_register_board_info(APQ_8064_GSBI1_QUP_I2C_BUS_ID,
-//			smb345_charger_i2c_info_ER,
-//			ARRAY_SIZE(smb345_charger_i2c_info_ER));
-//		break;
-//	default:
+	case HW_REV_E:
+		i2c_register_board_info(APQ_8064_GSBI1_QUP_I2C_BUS_ID,
+			smb345_charger_i2c_info_ER,
+			ARRAY_SIZE(smb345_charger_i2c_info_ER));
+		break;
+	default:
 //		i2c_register_board_info(APQ_8064_GSBI1_QUP_I2C_BUS_ID,
 //			smb345_charger_i2c_info_SR1,
 //			ARRAY_SIZE(smb345_charger_i2c_info_SR1));
-//		break;
-//	}
-//}
+		break;
+	}
+}
 
 #if 0
 static struct smb349_platform_data smb349_data __initdata = {
@@ -3405,7 +3404,7 @@ static void __init apq8064_common_init(void)
 	apq8064_i2c_init();
 	register_i2c_devices();
 
-	//smb345_init();
+	smb345_init();
 	apq8064_audio_init();
 
 	apq8064_device_qup_spi_gsbi5.dev.platform_data =
@@ -3502,7 +3501,7 @@ int __init asustek_add_lid(void)
 	case HW_REV_C:
 	case HW_REV_D:
 	case HW_REV_E:
-		if(machine_is_apq8064_flo())
+		if(machine_is_apq8064_flo()  || machine_is_apq8064_duma())
 			lid_reg = regulator_get(NULL, "8921_l17");
 		else if(machine_is_apq8064_deb())
 			lid_reg = regulator_get(NULL, "8921_l9");
@@ -3551,7 +3550,7 @@ static void __init apq8064_allocate_memory_regions(void)
 
 static void __init apq8064_cdp_init(void)
 {
-	//int rc = 0;
+	//int rc = 0; commented DUMA non have INPUT_LID
 	printk(KERN_NOTICE "MIDR      = 0x%08x\n", read_cpuid_id());
 	if (meminfo_init(SYS_MEMORY, SZ_256M) < 0)
 		pr_err("meminfo_init() failed!\n");
@@ -3585,11 +3584,11 @@ static void __init apq8064_cdp_init(void)
 	asustek_add_keypad();
 #endif
 
-//#ifdef CONFIG_INPUT_LID
-//	rc = asustek_add_lid();
-//	if(rc)
-//		pr_err("asustek_add_lid() failed!\n");
-//#endif
+#ifdef CONFIG_INPUT_LID
+	rc = asustek_add_lid();
+	if(rc)
+		pr_err("asustek_add_lid() failed!\n");
+#endif
 }
 
 MACHINE_START(APQ8064_DUMA, "QCT APQ8064 DUMA")

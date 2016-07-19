@@ -568,10 +568,10 @@ static int bq27541_get_psp(int reg_offset, enum power_supply_property psp,
 			if (bq27541_device->old_capacity == 100) {
 				val->intval = POWER_SUPPLY_STATUS_FULL;
 			} else {
-				if(!(machine_is_apq8064_duma() && !otg_on))
+				/*if(!(machine_is_apq8064_duma() && !otg_on))*/
 				    val->intval = POWER_SUPPLY_STATUS_CHARGING;
-				else
-				    val->intval = POWER_SUPPLY_STATUS_NOT_CHARGING;
+			/*	else
+				    val->intval = POWER_SUPPLY_STATUS_NOT_CHARGING;*/
 			}
 		} else if (ret & BATT_STS_SOCF) {		/* Fully Discharged detected */
 			val->intval = POWER_SUPPLY_STATUS_DISCHARGING;

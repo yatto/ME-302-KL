@@ -142,7 +142,7 @@ static void __msm_power_off(int lower_pshold)
 #ifdef CONFIG_MSM_DLOAD_MODE
 	set_dload_mode(0);
 #endif
-	if (machine_is_apq8064_flo() || machine_is_apq8064_deb()) {
+	if (machine_is_apq8064_flo() || machine_is_apq8064_deb() || machine_is_apq8064_duma()) {
 		if (get_cable_status()) {
 			printk(KERN_CRIT "Go to charger mode!");
 			reset = 1;

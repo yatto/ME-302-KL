@@ -303,6 +303,49 @@ error:
 	return ret;
 }
 
+int usb_switch_remove_ac_path_setting(void)
+{
+	struct i2c_client *client = charger->client;
+	int ret = 0;
+
+	ret = smb345_volatile_writes(client, smb345_ENABLE_WRITE);
+	if (ret < 0) {
+		dev_err(&client->dev, "%s() error in configuring charger..\n",__func__);
+		goto error;
+	}
+
+	SMB_NOTICE("Set USB to HC Mode\n");
+	ret = smb345_update_reg(client, smb345_CMD_REG_B, 0x03);
+	if (ret < 0) {
+		dev_err(&client->dev, "%s() error in configuring charger..\n",__func__);
+		goto error;
+	}
+
+	ret = smb345_read(client, smb345_PIN_CTRL);
+	if (ret < 0) {
+		dev_err(&client->dev, "%s(): Failed in reading 0x%02x\n",
+				__func__, smb345_PIN_CTRL);
+		goto error;
+	}
+
+	SMB_NOTICE("Set Register Control, retval=%x setting=%x\n", ret, (int)(ret & (~(BIT(4)))));
+	ret = smb345_write(client, smb345_PIN_CTRL, (u8)(ret & (~(BIT(4)))));
+	if (ret < 0) {
+		dev_err(&client->dev, "%s(): Failed in writing 0x%02x to register"
+			"0x%02x\n", __func__, (int)(ret & (~(BIT(4)))), smb345_PIN_CTRL);
+		goto error;
+	}
+
+	ret = smb345_volatile_writes(client, smb345_DISABLE_WRITE);
+	if (ret < 0) {
+		dev_err(&client->dev, "%s() error in configuring charger..\n",__func__);
+		goto error;
+	}
+
+error:
+	return ret;
+
+}
 
 
 int smb345_charger_enable(bool state)
@@ -702,6 +745,7 @@ void reconfig_AICL(void)
 
 			if ((retval & 0xF) <= 0x1) {
 				SMB_NOTICE("reconfig input current limit\n");
+				usb_switch_remove_ac_path_setting();
 				smb345_set_InputCurrentlimit(client, 1800, MAX_USBIN);
 			}
 		}
@@ -930,7 +974,7 @@ int usb_cable_type_detect(unsigned int chgr_type)
 				goto done;
 			}
 			if (machine_is_apq8064_duma()){
-				usb_switch_remove_usb_path_setting();
+				usb_switch_remove_ac_path_setting();
 				smb345_set_InputCurrentlimit(client, 1800, MAX_USBIN);
 			}
 			else

@@ -1353,7 +1353,7 @@ static struct gpiomux_setting usb_id_gpio_config = {
 
 static struct msm_gpiomux_config asustek_usb_id_gpio_configs[] __initdata = {
 	{
-		.gpio = 77,	/* APQ_USB_ID */
+		.gpio = 77,	// APQ_USB_ID
 		.settings = {
 			[GPIOMUX_SUSPENDED] = &usb_id_gpio_config,
 			[GPIOMUX_ACTIVE]= &usb_id_gpio_config,
@@ -1618,7 +1618,7 @@ static struct msm_gpiomux_config msm8064_mullet_ts_gpio_config[] __initdata = {
 	},
 
 };
-
+/*   DUMA NON USE SLIMPORT !!!!!
 static struct gpiomux_setting sp_clk_config = {
 	.func = GPIOMUX_FUNC_2,
 	.drv  = GPIOMUX_DRV_2MA,
@@ -1630,8 +1630,8 @@ static struct gpiomux_setting sp_gpio_config = {
 	.drv  = GPIOMUX_DRV_2MA,
 	.pull = GPIOMUX_PULL_NONE,
 	.dir   = GPIOMUX_IN,
-};
-
+};*/
+/*
 //add slimport gpio
 static struct msm_gpiomux_config msm8064_sp_gpio_config[] __initdata = {
 	{
@@ -1663,7 +1663,7 @@ static struct msm_gpiomux_config msm8064_sp_gpio_config[] __initdata = {
 
 		}
 	},
-};
+};*/
 
 static struct gpiomux_setting gsbi4_suspended = {
     .func = GPIOMUX_FUNC_GPIO,
@@ -1902,11 +1902,11 @@ msm_gpiomux_install(smb345_pin_configs,
 	if (machine_is_apq8064_flo() || machine_is_apq8064_deb())
 		msm_gpiomux_install(apq8064_bcm2079x_nfc_configs,
 			ARRAY_SIZE(apq8064_bcm2079x_nfc_configs));*/
-
+/*
 #ifdef CONFIG_SLIMPORT_ANX7808
 	msm_gpiomux_install(msm8064_sp_gpio_config,
 			ARRAY_SIZE(msm8064_sp_gpio_config));
-#endif
+#endif*/
 	msm_gpiomux_install(apq8064_headphone_configs,
 			ARRAY_SIZE(apq8064_headphone_configs));
 
